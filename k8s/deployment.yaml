@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: gts-system
+  name: demo-nginx
+  labels:
+    app: demo-nginx
+spec:
+  selector:
+    matchLabels:
+      app: demo-nginx
+  template:
+    metadata:
+      labels:
+        app: demo-nginx
+    spec:
+      imagePullSecrets:
+      - name: jfrog
+      containers:
+      - name: demo-nginx
+        image: __containerRegistry__/__image-name__:__image-tag__
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            memory: "10Mi"
+            cpu: "20m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-nginx
+spec:
+  selector:
+    app: demo-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80   
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-nginx
+spec:
+  rules:
+  - host: sbccc.asia.pwcinternal.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: demo-nginx
+            port:
+              number: 80           
