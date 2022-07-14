@@ -1,0 +1,45 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: DevSecOps_Demo_Self_Hosted_Agents
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
+- script: |
+    echo Add other tasks to build, test, and deploy your project.
+    echo See https://aka.ms/yaml
+  displayName: 'Run a multi-line script'
+
+- task: Docker@0
+  displayName: 'Build an image'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryConnection: 'gtsartifact_jfrog_io'
+    imageName: 'pwc-cnhk-gts-system/bochen-test:$(Build.BuildId)'
+
+- task: JFrog.jfrog-artifactory-vsts-extension.artifactory-docker.ArtifactoryDocker@1
+  displayName: 'Artifactory Docker push'
+  inputs:
+    artifactoryService: 'gtsartifact_jfrog_io_artifactory'
+    targetRepo: 'pwc-cnhk-gts-system'
+    imageName: 'gtsartifact.jfrog.io/pwc-cnhk-gts-system/bochen-test:$(Build.BuildId)'
+    collectBuildInfo: true
+
+- task: JFrog.jfrog-artifactory-vsts-extension.artifactory-publish-build-info.ArtifactoryPublishBuildInfo@1
+  displayName: 'Artifactory Publish Build Info'
+  inputs:
+    artifactoryService: 'gtsartifact_jfrog_io_artifactory'
+
+- task: JFrog.jfrog-artifactory-vsts-extension.artifactory-xray-scan-task.ArtifactoryXrayScan@1
+  displayName: 'Artifactory Xray Scan'
+  inputs:
+    artifactoryService: 'gtsartifact_jfrog_io_artifactory'
+
