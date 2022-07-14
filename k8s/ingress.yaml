@@ -3,6 +3,7 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: demo-nginx
+  namespace: gts-system
 spec:
   rules:
   - host: sbccc.asia.pwcinternal.com
