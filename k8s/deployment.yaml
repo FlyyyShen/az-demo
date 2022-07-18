@@ -18,7 +18,7 @@ spec:
       - name: jfrog
       containers:
       - name: demo-nginx
-        image: $(CONTAINERREGISTRY)/$(IMAGE-NAME):$(image-tag)
+        image: $(CONTAINERREGISTRY)/$(IMAGE-NAME):$(IMAGE-TAG)
         ports:
         - containerPort: 80
         resources:
